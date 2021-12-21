@@ -22,9 +22,16 @@ NSURL * _url;
 }
 
 - (void)loadWithCompletion: (void (^)(NSError *))completion {
-    [_client getFromURL:_url withCompletion: ^(NSError *) {
-		NSError *conectivityError = [NSError errorWithDomain:@"connectivity" code:0 userInfo:@{ NSLocalizedDescriptionKey:@"Connectivity error" }];
-		completion(conectivityError);
+    [_client getFromURL:_url withCompletion: ^(NSHTTPURLResponse *response, NSError *error) {
+
+        if (response) {
+            NSError *invalidError = [NSError errorWithDomain:@"invalid" code:0 userInfo:@{ NSLocalizedDescriptionKey:@"Invalid error" }];
+            completion(invalidError);
+        } else {
+            NSError *conectivityError = [NSError errorWithDomain:@"connectivity" code:0 userInfo:@{ NSLocalizedDescriptionKey:@"Connectivity error" }];
+            completion(conectivityError);
+        } 
+
 	}];
 }
 

@@ -13,5 +13,6 @@
 @property (nonatomic, strong) NSMutableArray *completions;
 
 - (void)completeWithError:(NSError *)error;
+- (void)completeWithStatusCode:(NSInteger)code at:(NSInteger)index;
 
 @end

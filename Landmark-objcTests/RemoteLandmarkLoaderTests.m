@@ -61,4 +61,26 @@
     XCTAssertTrue([capturedErrors isEqual: @[error]]); 
 }
 
+- (void)test_load_deliversErrorOnNon200HTTPClientResponse {
+    NSURL *url = [[NSURL alloc] initWithString:@"https://some-url.com"];
+    HTTPClientSpy * client = HTTPClientSpy.new;
+    RemoteLandmarkLoader * sut = [[RemoteLandmarkLoader alloc] initWithHTTPClient:client andURL:url];
+
+    NSArray<NSNumber *> *samples = @[@199, @201, @300, @400, @500];
+
+    for(NSInteger i = 0; i < [samples count]; i++) {
+
+        NSMutableArray<NSError *> *capturedErrors = NSMutableArray.new;
+        [sut loadWithCompletion: ^(NSError *error) {        
+             [capturedErrors addObject: error];
+        }];
+
+        [client completeWithStatusCode: samples[i] at: i];
+
+        XCTAssertTrue([capturedErrors count] == 1);
+        XCTAssertTrue([capturedErrors[0].domain isEqual: @"invalid"]);        
+    }
+     
+}
+
 @end
