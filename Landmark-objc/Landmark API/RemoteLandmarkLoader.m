@@ -21,8 +21,11 @@ NSURL * _url;
     return self;
 }
 
-- (void)load {
-    [_client getFromURL:_url];
+- (void)loadWithCompletion: (void (^)(NSError *))completion {
+    [_client getFromURL:_url withCompletion: ^(NSError *) {
+		NSError *conectivityError = [NSError errorWithDomain:@"connectivity" code:0 userInfo:@{ NSLocalizedDescriptionKey:@"Connectivity error" }];
+		completion(conectivityError);
+	}];
 }
 
 @end

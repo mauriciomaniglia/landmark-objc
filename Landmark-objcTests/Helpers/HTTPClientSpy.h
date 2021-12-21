@@ -10,5 +10,8 @@
 @interface HTTPClientSpy: NSObject <HTTPClient>
 
 @property (nonatomic, strong) NSMutableArray *requestURLs;
+@property (nonatomic, strong) NSMutableArray *completions;
+
+- (void)completeWithError:(NSError *)error;
 
 @end

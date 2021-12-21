@@ -28,7 +28,7 @@
     RemoteLandmarkLoader * sut = [[RemoteLandmarkLoader alloc] initWithHTTPClient:client andURL:url];
     NSArray *requestURLs = @[url];
 
-    [sut load];
+    [sut loadWithCompletion: ^(NSError *error) {}];
 
     XCTAssertTrue([client.requestURLs isEqual: requestURLs]);
 }
@@ -39,10 +39,26 @@
     RemoteLandmarkLoader * sut = [[RemoteLandmarkLoader alloc] initWithHTTPClient:client andURL:url];
     NSArray *requestURLs = @[url, url];
 
-    [sut load];
-    [sut load];
+    [sut loadWithCompletion: ^(NSError *error) {}];
+    [sut loadWithCompletion: ^(NSError *error) {}];
 
     XCTAssertTrue([client.requestURLs isEqual: requestURLs]);
+}
+
+- (void)test_load_deliversErrorOnClientError {
+    NSURL *url = [[NSURL alloc] initWithString:@"https://some-url.com"];
+    HTTPClientSpy * client = HTTPClientSpy.new;
+    RemoteLandmarkLoader * sut = [[RemoteLandmarkLoader alloc] initWithHTTPClient:client andURL:url];
+
+    NSMutableArray *capturedErrors = NSMutableArray.new;
+    [sut loadWithCompletion: ^(NSError *error) {
+        [capturedErrors addObject: error];
+    }];
+
+    NSError *error = [NSError errorWithDomain:@"connectivity" code:0 userInfo:@{ NSLocalizedDescriptionKey:@"Connectivity error" }];
+    [client completeWithError:error];
+
+    XCTAssertTrue([capturedErrors isEqual: @[error]]); 
 }
 
 @end
