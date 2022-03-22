@@ -22,7 +22,7 @@ NSURL * _url;
 }
 
 - (void)loadWithCompletion:(void (^)(NSError *))completion {
-    [_client getFromURL:_url withCompletion: ^(NSHTTPURLResponse *response, NSError *error) {
+    [_client getFromURL:_url withCompletion: ^(NSData *data, NSHTTPURLResponse *response, NSError *error) {
 
         if (response) {
             NSError *invalidError = [NSError errorWithDomain:@"invalid" code:0 userInfo:@{NSLocalizedDescriptionKey:@"Invalid error"}];

@@ -75,12 +75,29 @@
              [capturedErrors addObject: error];
         }];
 
-        [client completeWithStatusCode:samples[i] at:i];
+        [client completeWithStatusCode:(NSInteger)samples[i] withData: NSData.new at:i];
 
         XCTAssertTrue([capturedErrors count] == 1);
         XCTAssertTrue([capturedErrors[0].domain isEqual:@"invalid"]);        
     }
      
+}
+
+- (void)test_load_deliversErrorOn200HTTPResponseWithInvalidJSON {
+    NSURL *url = [[NSURL alloc] initWithString:@"https://some-url.com"];
+    HTTPClientSpy *client = HTTPClientSpy.new;
+    RemoteLandmarkLoader *sut = [[RemoteLandmarkLoader alloc] initWithHTTPClient:client andURL:url];
+
+    NSMutableArray<NSError *> *capturedErrors = NSMutableArray.new;
+    [sut loadWithCompletion: ^(NSError *error) {
+        [capturedErrors addObject: error];
+    }];
+
+    NSData *invalidJSON = [NSData dataWithBytes:@"invalid json".UTF8String length:0];
+    [client completeWithStatusCode:200 withData:invalidJSON at:0];
+
+    XCTAssertTrue([capturedErrors count] == 1);
+    XCTAssertTrue([capturedErrors[0].domain isEqual:@"invalid"]);
 }
 
 @end
