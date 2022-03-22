@@ -18,8 +18,8 @@
     return self;
 }
 
-- (void)getFromURL:(NSURL *)url withCompletion: (void (^)(NSHTTPURLResponse *, NSError *))completion {
-    [self.completions addObject: [completion copy]];
+- (void)getFromURL:(NSURL *)url withCompletion:(void (^)(NSHTTPURLResponse *, NSError *))completion {
+    [self.completions addObject:[completion copy]];
     [self.requestURLs addObject:url];
 }
 
@@ -29,7 +29,7 @@
 }
 
 - (void)completeWithStatusCode:(NSInteger)code at:(NSInteger)index {
-    NSHTTPURLResponse *response = [[NSHTTPURLResponse alloc] initWithURL: self.requestURLs[index] statusCode: code HTTPVersion: nil headerFields:nil];
+    NSHTTPURLResponse *response = [[NSHTTPURLResponse alloc] initWithURL:self.requestURLs[index] statusCode:code HTTPVersion:nil headerFields:nil];
     void (^ completion)(NSHTTPURLResponse *, NSError *) = self.completions[index];
     completion(response, nil); 
 }

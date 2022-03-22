@@ -9,6 +9,6 @@
 
 @protocol HTTPClient
 
-- (void)getFromURL: (NSURL *)url withCompletion: (void (^)(NSHTTPURLResponse *, NSError *))completion;
+- (void)getFromURL:(NSURL *)url withCompletion:(void (^)(NSHTTPURLResponse *, NSError *))completion;
 
 @end

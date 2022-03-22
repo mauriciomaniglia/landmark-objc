@@ -10,8 +10,8 @@
 
 @interface RemoteLandmarkLoader : NSObject
 
-- (instancetype)initWithHTTPClient: (id<HTTPClient>) client andURL: (NSURL *)url;
+- (instancetype)initWithHTTPClient:(id<HTTPClient>) client andURL:(NSURL *)url;
 
-- (void)loadWithCompletion: (void (^)(NSError *))completion;
+- (void)loadWithCompletion:(void (^)(NSError *))completion;
 
 @end
