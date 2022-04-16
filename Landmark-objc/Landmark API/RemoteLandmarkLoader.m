@@ -25,8 +25,15 @@ NSURL * _url;
     [_client getFromURL:_url withCompletion: ^(NSData *data, NSHTTPURLResponse *response, NSError *error) {
 
         if (response) {
-            NSError *invalidError = [NSError errorWithDomain:@"invalid" code:0 userInfo:@{NSLocalizedDescriptionKey:@"Invalid error"}];
-            completion(invalidError, nil);
+            NSError *error = nil;
+            NSArray *jsonArray = [NSJSONSerialization JSONObjectWithData: data options: NSJSONReadingMutableContainers error: &error];
+            
+            if (jsonArray) {
+                completion(nil, @[]);
+            } else {
+                NSError *invalidError = [NSError errorWithDomain:@"invalid" code:0 userInfo:@{NSLocalizedDescriptionKey:@"Invalid error"}];
+                completion(invalidError, nil);
+            }
         } else {
             NSError *conectivityError = [NSError errorWithDomain:@"connectivity" code:0 userInfo:@{NSLocalizedDescriptionKey:@"Connectivity error"}];
             completion(conectivityError, nil);

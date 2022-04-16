@@ -84,6 +84,27 @@
     }];
 }
 
+-(void)test_load_deliversNoItemsOn200HTTPResponseWithEmptyJSONList {
+    NSURL *url = [[NSURL alloc] initWithString:@"https://some-url.com"];
+    HTTPClientSpy *client = HTTPClientSpy.new;
+    RemoteLandmarkLoader *sut = [[RemoteLandmarkLoader alloc] initWithHTTPClient:client andURL:url];
+
+    NSMutableArray *capturedLandmarks = NSMutableArray.new;
+    NSMutableArray *capturedErrors = NSMutableArray.new;
+    [sut loadWithCompletion: ^(NSError *error, NSArray *landmarks) {
+        if ([landmarks count] > 0) { [capturedLandmarks addObject: landmarks]; }
+        if (error) { [capturedErrors addObject:error]; }
+    }];
+
+    
+    NSString *jsonString = @"{\"items\": []}";
+    NSData *emptyListJSON = [jsonString dataUsingEncoding:NSUTF8StringEncoding];
+    [client completeWithStatusCode:200 withData:emptyListJSON at:0];
+    
+    XCTAssertTrue([capturedErrors isEqual: @[]]);
+    XCTAssertTrue([capturedLandmarks isEqual: @[]]);
+}
+
 // MARK: - Helpers
 
 - (void)expect: (RemoteLandmarkLoader *)sut toCompleteWithError:(NSError *)error when: (void (^)(void))action {
