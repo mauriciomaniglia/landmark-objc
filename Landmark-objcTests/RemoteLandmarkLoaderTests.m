@@ -49,16 +49,11 @@
     NSURL *url = [[NSURL alloc] initWithString:@"https://some-url.com"];
     HTTPClientSpy *client = HTTPClientSpy.new;
     RemoteLandmarkLoader *sut = [[RemoteLandmarkLoader alloc] initWithHTTPClient:client andURL:url];
-
-    NSMutableArray *capturedErrors = NSMutableArray.new;
-    [sut loadWithCompletion: ^(NSError *error) {
-        [capturedErrors addObject: error];
-    }];
-
+    
     NSError *error = [NSError errorWithDomain:@"connectivity" code:0 userInfo:@{NSLocalizedDescriptionKey:@"Connectivity error"}];
-    [client completeWithError:error];
-
-    XCTAssertTrue([capturedErrors isEqual: @[error]]); 
+    [self expect:sut toCompleteWithError:error when:^{
+        [client completeWithError:error];
+    }];
 }
 
 - (void)test_load_deliversErrorOnNon200HTTPClientResponse {
@@ -69,16 +64,10 @@
     NSArray<NSNumber *> *samples = @[@199, @201, @300, @400, @500];
 
     for(NSInteger i = 0; i < [samples count]; i++) {
-
-        NSMutableArray<NSError *> *capturedErrors = NSMutableArray.new;
-        [sut loadWithCompletion: ^(NSError *error) {        
-             [capturedErrors addObject: error];
+        NSError *error = [NSError errorWithDomain:@"invalid" code:0 userInfo:@{NSLocalizedDescriptionKey:@"Invalid error"}];
+        [self expect:sut toCompleteWithError:error when:^{
+            [client completeWithStatusCode:(NSInteger)samples[i] withData: NSData.new at:i];
         }];
-
-        [client completeWithStatusCode:(NSInteger)samples[i] withData: NSData.new at:i];
-
-        XCTAssertTrue([capturedErrors count] == 1);
-        XCTAssertTrue([capturedErrors[0].domain isEqual:@"invalid"]);        
     }
      
 }
@@ -88,16 +77,24 @@
     HTTPClientSpy *client = HTTPClientSpy.new;
     RemoteLandmarkLoader *sut = [[RemoteLandmarkLoader alloc] initWithHTTPClient:client andURL:url];
 
-    NSMutableArray<NSError *> *capturedErrors = NSMutableArray.new;
+    NSError *error = [NSError errorWithDomain:@"invalid" code:0 userInfo:@{NSLocalizedDescriptionKey:@"Invalid error"}];
+    [self expect:sut toCompleteWithError:error when:^{
+        NSData *invalidJSON = [NSData dataWithBytes:@"invalid json".UTF8String length:0];
+        [client completeWithStatusCode:200 withData:invalidJSON at:0];
+    }];
+}
+
+// MARK: - Helpers
+
+- (void)expect: (RemoteLandmarkLoader *)sut toCompleteWithError:(NSError *)error when: (void (^)(void))action {
+    NSMutableArray *capturedErrors = NSMutableArray.new;
     [sut loadWithCompletion: ^(NSError *error) {
         [capturedErrors addObject: error];
     }];
-
-    NSData *invalidJSON = [NSData dataWithBytes:@"invalid json".UTF8String length:0];
-    [client completeWithStatusCode:200 withData:invalidJSON at:0];
-
-    XCTAssertTrue([capturedErrors count] == 1);
-    XCTAssertTrue([capturedErrors[0].domain isEqual:@"invalid"]);
+    
+    action();
+    
+    XCTAssertTrue([capturedErrors isEqual: @[error]]);
 }
 
 @end
