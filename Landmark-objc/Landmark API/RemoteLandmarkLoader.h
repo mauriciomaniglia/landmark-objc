@@ -12,6 +12,6 @@
 
 - (instancetype)initWithHTTPClient:(id<HTTPClient>) client andURL:(NSURL *)url;
 
-- (void)loadWithCompletion:(void (^)(NSError *))completion;
+- (void)loadWithCompletion:(void (^)(NSError *, NSArray *))completion;
 
 @end

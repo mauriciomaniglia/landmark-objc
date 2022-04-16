@@ -21,15 +21,15 @@ NSURL * _url;
     return self;
 }
 
-- (void)loadWithCompletion:(void (^)(NSError *))completion {
+- (void)loadWithCompletion:(void (^)(NSError *, NSArray *))completion {
     [_client getFromURL:_url withCompletion: ^(NSData *data, NSHTTPURLResponse *response, NSError *error) {
 
         if (response) {
             NSError *invalidError = [NSError errorWithDomain:@"invalid" code:0 userInfo:@{NSLocalizedDescriptionKey:@"Invalid error"}];
-            completion(invalidError);
+            completion(invalidError, nil);
         } else {
             NSError *conectivityError = [NSError errorWithDomain:@"connectivity" code:0 userInfo:@{NSLocalizedDescriptionKey:@"Connectivity error"}];
-            completion(conectivityError);
+            completion(conectivityError, nil);
         } 
 
 	}];

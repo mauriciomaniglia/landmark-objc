@@ -28,7 +28,7 @@
     RemoteLandmarkLoader *sut = [[RemoteLandmarkLoader alloc] initWithHTTPClient:client andURL:url];
     NSArray *requestURLs = @[url];
 
-    [sut loadWithCompletion: ^(NSError *error) {}];
+    [sut loadWithCompletion: ^(NSError *error, NSArray *landmarks) {}];
 
     XCTAssertTrue([client.requestURLs isEqual: requestURLs]);
 }
@@ -39,8 +39,8 @@
     RemoteLandmarkLoader *sut = [[RemoteLandmarkLoader alloc] initWithHTTPClient:client andURL:url];
     NSArray *requestURLs = @[url, url];
 
-    [sut loadWithCompletion: ^(NSError *error) {}];
-    [sut loadWithCompletion: ^(NSError *error) {}];
+    [sut loadWithCompletion: ^(NSError *error, NSArray *landmarks) {}];
+    [sut loadWithCompletion: ^(NSError *error, NSArray *landmarks) {}];
 
     XCTAssertTrue([client.requestURLs isEqual: requestURLs]);
 }
@@ -88,7 +88,7 @@
 
 - (void)expect: (RemoteLandmarkLoader *)sut toCompleteWithError:(NSError *)error when: (void (^)(void))action {
     NSMutableArray *capturedErrors = NSMutableArray.new;
-    [sut loadWithCompletion: ^(NSError *error) {
+    [sut loadWithCompletion: ^(NSError *error, NSArray *landmarks) {
         [capturedErrors addObject: error];
     }];
     
