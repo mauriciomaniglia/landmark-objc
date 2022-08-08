@@ -67,7 +67,10 @@
     for(NSInteger i = 0; i < [samples count]; i++) {
         NSError *error = [NSError errorWithDomain:@"invalid" code:0 userInfo:@{NSLocalizedDescriptionKey:@"Invalid error"}];
         [self expect:sut toCompleteWithError:error when:^{
-            [client completeWithStatusCode:(NSInteger)samples[i] withData: NSData.new at:i];
+            NSString *jsonString = @"{\"items\": []}";
+            NSData *emptyListJSON = [jsonString dataUsingEncoding:NSUTF8StringEncoding];
+            
+            [client completeWithStatusCode:(NSInteger)samples[i] withData: emptyListJSON at:i];
         }];
     }
      
