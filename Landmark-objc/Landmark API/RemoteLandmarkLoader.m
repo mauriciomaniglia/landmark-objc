@@ -6,6 +6,7 @@
 //
 
 #import "RemoteLandmarkLoader.h"
+#import "Landmark.h"
 
 @implementation RemoteLandmarkLoader
 
@@ -29,7 +30,9 @@ NSURL * _url;
             NSArray *jsonArray = [NSJSONSerialization JSONObjectWithData: data options: NSJSONReadingMutableContainers error: &error];
             
             if (jsonArray) {
-                completion(nil, @[]);
+                [self map:data andResponse:response completionHandler:^(NSArray *landmarks, NSError *error) {
+                    completion(error, landmarks);
+                }];
             } else {
                 NSError *invalidError = [NSError errorWithDomain:@"invalid" code:0 userInfo:@{NSLocalizedDescriptionKey:@"Invalid error"}];
                 completion(invalidError, nil);
@@ -40,6 +43,42 @@ NSURL * _url;
         } 
 
 	}];
+}
+
+- (void)map: (NSData *)data andResponse: (NSHTTPURLResponse *)response completionHandler: (void (^)(NSArray<Landmark *> *, NSError *))completion {
+
+    if (response.statusCode != 200) {
+        NSError *invalidError = [NSError errorWithDomain:@"invalid" code:0 userInfo:@{NSLocalizedDescriptionKey:@"Invalid error"}];
+        completion(nil, invalidError);
+        return;
+    }
+    
+    NSError *error;
+    id landmarksResponse = [NSJSONSerialization JSONObjectWithData:data options:0 error:&error];
+    
+    if (error) {
+        NSError *invalidError = [NSError errorWithDomain:@"invalid" code:0 userInfo:@{NSLocalizedDescriptionKey:@"Invalid error"}];
+        completion(nil, invalidError);
+        return;
+    }
+    
+    if ([landmarksResponse isKindOfClass: [NSDictionary class]]) {
+        NSDictionary *dictResponse = landmarksResponse;
+        NSArray *landmarks = dictResponse[@"items"];
+        NSMutableArray<Landmark *> *finalResult = [NSMutableArray array];
+        
+        for (NSDictionary *landmark in landmarks) {
+            Landmark *item = [Landmark new];
+            item.id = landmark[@"id"];
+            item.landDescription = landmark[@"description"] != nil ? landmark[@"description"] : @"";
+            item.location = landmark[@"location"] != nil ? landmark[@"location"] : @"";
+            item.imageURL = [NSURL URLWithString: landmark[@"image"]];
+            
+            [finalResult addObject:item];
+        }
+        
+        completion(finalResult, nil);
+    }
 }
 
 @end

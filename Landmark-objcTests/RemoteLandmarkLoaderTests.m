@@ -7,6 +7,7 @@
 
 #import <XCTest/XCTest.h>
 #import "RemoteLandmarkLoader.h"
+#import "Landmark.h"
 #import "HTTPClientSpy.h"
 
 @interface RemoteLandmarkLoaderTests: XCTestCase
@@ -105,6 +106,44 @@
     XCTAssertTrue([capturedLandmarks isEqual: @[]]);
 }
 
+- (void)test_load_deliversItemsOn200HTTPResponseWithJsonItems {
+    NSURL *url = [[NSURL alloc] initWithString:@"https://some-url.com"];
+    HTTPClientSpy *client = HTTPClientSpy.new;
+    RemoteLandmarkLoader *sut = [[RemoteLandmarkLoader alloc] initWithHTTPClient:client andURL:url];
+    
+    Landmark *item1 = [Landmark new];
+    item1.id = [NSUUID new].UUIDString;
+    item1.landDescription = @"";
+    item1.location = @"";
+    item1.imageURL = [[NSURL alloc] initWithString:@"https://some-url.com"];
+    
+    Landmark *item2 = [Landmark new];
+    item2.id = [NSUUID new].UUIDString;
+    item2.landDescription = @"a description";
+    item2.location = @"a location";
+    item2.imageURL = [[NSURL alloc] initWithString:@"https://another-url.com"];
+
+    [self expect: sut toCompleteWithLandmarks:@[item1, item2] when:^{
+        NSMutableDictionary *item1Json = [NSMutableDictionary dictionary];
+        item1Json[@"id"] = item1.id;
+        item1Json[@"description"] = item1.landDescription;
+        item1Json[@"location"] = item1.location;
+        item1Json[@"image"] = item1.imageURL.absoluteString;
+        
+        NSMutableDictionary *item2Json = [NSMutableDictionary dictionary];
+        item2Json[@"id"] = item2.id;
+        item2Json[@"description"] = item2.landDescription;
+        item2Json[@"location"] = item2.location;
+        item2Json[@"image"] = item2.imageURL.absoluteString;
+
+        NSDictionary *itemsJson = @{ @"items": @[item1Json, item2Json] };
+        NSError *error;
+        NSData *json = [NSJSONSerialization dataWithJSONObject:itemsJson options:kNilOptions error:&error];
+
+        [client completeWithStatusCode:200 withData:json at:0];
+    }];
+}
+
 // MARK: - Helpers
 
 - (void)expect: (RemoteLandmarkLoader *)sut toCompleteWithError:(NSError *)error when: (void (^)(void))action {
@@ -116,6 +155,25 @@
     action();
     
     XCTAssertTrue([capturedErrors isEqual: @[error]]);
+}
+
+- (void)expect: (RemoteLandmarkLoader *)sut toCompleteWithLandmarks:(NSArray<Landmark *> *)landmarks when: (void (^)(void))action {
+    __block NSArray<Landmark *> *capturedLandmarks;
+    [sut loadWithCompletion: ^(NSError *error, NSArray *landmarks) {
+        capturedLandmarks = landmarks;
+    }];
+    
+    action();
+    
+    for (int i = 0; i < landmarks.count; i++) {
+        Landmark *landmark = landmarks[i];
+        Landmark *capturedLandmark = capturedLandmarks[i];
+        
+        XCTAssertTrue([landmark.id isEqualToString:capturedLandmark.id]);
+        XCTAssertTrue([landmark.landDescription isEqualToString:capturedLandmark.landDescription]);
+        XCTAssertTrue([landmark.location isEqualToString:capturedLandmark.location]);
+        XCTAssertTrue([landmark.imageURL.absoluteString isEqualToString:capturedLandmark.imageURL.absoluteString]);
+    }
 }
 
 @end

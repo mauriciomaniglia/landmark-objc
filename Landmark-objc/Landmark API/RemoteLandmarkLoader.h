@@ -8,7 +8,7 @@
 #import <Foundation/Foundation.h>
 #import "HTTPClient.h"
 
-@interface RemoteLandmarkLoader : NSObject
+@interface RemoteLandmarkLoader: NSObject
 
 - (instancetype)initWithHTTPClient:(id<HTTPClient>) client andURL:(NSURL *)url;
 

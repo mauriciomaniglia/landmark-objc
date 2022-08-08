@@ -9,9 +9,11 @@
 
 @interface Landmark : NSObject
 
-@property (nonatomic, copy) NSUUID *id;
+@property (nonatomic, copy) NSString *id;
 @property (nonatomic, copy) NSString *landDescription;
 @property (nonatomic, copy) NSString *location;
 @property (nonatomic, copy) NSURL *imageURL;
+
+-(instancetype)initWithUUID: (NSString *)id andDescription: (NSString *) landDescription andLocation: (NSString *)location andImage: (NSURL *)imageURL;
 
 @end
