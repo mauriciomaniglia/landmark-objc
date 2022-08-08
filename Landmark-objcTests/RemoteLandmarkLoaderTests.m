@@ -50,10 +50,9 @@
     NSURL *url = [[NSURL alloc] initWithString:@"https://some-url.com"];
     HTTPClientSpy *client = HTTPClientSpy.new;
     RemoteLandmarkLoader *sut = [[RemoteLandmarkLoader alloc] initWithHTTPClient:client andURL:url];
-    
-    NSError *error = [NSError errorWithDomain:@"connectivity" code:0 userInfo:@{NSLocalizedDescriptionKey:@"Connectivity error"}];
-    [self expect:sut toCompleteWithError:error when:^{
-        [client completeWithError:error];
+        
+    [self expect:sut toCompleteWithError:[self connectivityError] when:^{
+        [client completeWithError:[self connectivityError]];
     }];
 }
 
@@ -65,8 +64,7 @@
     NSArray<NSNumber *> *samples = @[@199, @201, @300, @400, @500];
 
     for(NSInteger i = 0; i < [samples count]; i++) {
-        NSError *error = [NSError errorWithDomain:@"invalid" code:0 userInfo:@{NSLocalizedDescriptionKey:@"Invalid error"}];
-        [self expect:sut toCompleteWithError:error when:^{
+        [self expect:sut toCompleteWithError:[self invalidError] when:^{
             NSString *jsonString = @"{\"items\": []}";
             NSData *emptyListJSON = [jsonString dataUsingEncoding:NSUTF8StringEncoding];
             
@@ -80,9 +78,8 @@
     NSURL *url = [[NSURL alloc] initWithString:@"https://some-url.com"];
     HTTPClientSpy *client = HTTPClientSpy.new;
     RemoteLandmarkLoader *sut = [[RemoteLandmarkLoader alloc] initWithHTTPClient:client andURL:url];
-
-    NSError *error = [NSError errorWithDomain:@"invalid" code:0 userInfo:@{NSLocalizedDescriptionKey:@"Invalid error"}];
-    [self expect:sut toCompleteWithError:error when:^{
+    
+    [self expect:sut toCompleteWithError:[self invalidError] when:^{
         NSData *invalidJSON = [NSData dataWithBytes:@"invalid json".UTF8String length:0];
         [client completeWithStatusCode:200 withData:invalidJSON at:0];
     }];
@@ -177,6 +174,18 @@
         XCTAssertTrue([landmark.location isEqualToString:capturedLandmark.location]);
         XCTAssertTrue([landmark.imageURL.absoluteString isEqualToString:capturedLandmark.imageURL.absoluteString]);
     }
+}
+
+- (NSError *)invalidError {
+    return [NSError errorWithDomain:@"invalid"
+                               code:0
+                           userInfo:@{NSLocalizedDescriptionKey:@"Invalid error"}];
+}
+
+- (NSError *)connectivityError {
+    return [NSError errorWithDomain:@"connectivity"
+                               code:0
+                           userInfo:@{NSLocalizedDescriptionKey:@"Connectivity error"}];
 }
 
 @end
