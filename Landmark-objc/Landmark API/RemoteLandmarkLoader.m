@@ -34,12 +34,10 @@ NSURL * _url;
                     completion(error, landmarks);
                 }];
             } else {
-                NSError *invalidError = [NSError errorWithDomain:@"invalid" code:0 userInfo:@{NSLocalizedDescriptionKey:@"Invalid error"}];
-                completion(invalidError, nil);
+                completion([self invalidError], nil);
             }
         } else {
-            NSError *conectivityError = [NSError errorWithDomain:@"connectivity" code:0 userInfo:@{NSLocalizedDescriptionKey:@"Connectivity error"}];
-            completion(conectivityError, nil);
+            completion([self connectivityError], nil);
         } 
 
 	}];
@@ -48,8 +46,7 @@ NSURL * _url;
 - (void)map: (NSData *)data andResponse: (NSHTTPURLResponse *)response completionHandler: (void (^)(NSArray<Landmark *> *, NSError *))completion {
 
     if (response.statusCode != 200) {
-        NSError *invalidError = [NSError errorWithDomain:@"invalid" code:0 userInfo:@{NSLocalizedDescriptionKey:@"Invalid error"}];
-        completion(nil, invalidError);
+        completion(nil, [self invalidError]);
         return;
     }
     
@@ -57,8 +54,7 @@ NSURL * _url;
     id landmarksResponse = [NSJSONSerialization JSONObjectWithData:data options:0 error:&error];
     
     if (error) {
-        NSError *invalidError = [NSError errorWithDomain:@"invalid" code:0 userInfo:@{NSLocalizedDescriptionKey:@"Invalid error"}];
-        completion(nil, invalidError);
+        completion(nil, [self invalidError]);
         return;
     }
     
@@ -79,6 +75,18 @@ NSURL * _url;
         
         completion(finalResult, nil);
     }
+}
+
+- (NSError *)invalidError {
+    return [NSError errorWithDomain:@"invalid"
+                               code:0
+                           userInfo:@{NSLocalizedDescriptionKey:@"Invalid error"}];
+}
+
+- (NSError *)connectivityError {
+    return [NSError errorWithDomain:@"connectivity"
+                               code:0
+                           userInfo:@{NSLocalizedDescriptionKey:@"Connectivity error"}];
 }
 
 @end
