@@ -16,62 +16,53 @@
 @implementation RemoteLandmarkLoaderTests
 
 - (void)test_init_doesNotRequestDataFromURL {
-    NSURL *url = [[NSURL alloc] initWithString:@"https://a-url.com"];
-    HTTPClientSpy *client = HTTPClientSpy.new;
-    RemoteLandmarkLoader *sut = [[RemoteLandmarkLoader alloc] initWithHTTPClient:client andURL:url];
+    NSDictionary *makeSUT = [self makeSUT];
+    HTTPClientSpy *client = makeSUT[@"client"];
 
     XCTAssertTrue(client.requestURLs.count == 0);
-    
-    [self trackForMemoryLeaks:sut];
-    [self trackForMemoryLeaks:client];
 }
 
 - (void)test_load_requestDataFromURL {
     NSURL *url = [[NSURL alloc] initWithString:@"https://some-url.com"];
-    HTTPClientSpy *client = HTTPClientSpy.new;
-    RemoteLandmarkLoader *sut = [[RemoteLandmarkLoader alloc] initWithHTTPClient:client andURL:url];
+    NSDictionary *makeSUT = [self makeSUTWithURL:url];
+    RemoteLandmarkLoader *sut = makeSUT[@"sut"];
+    HTTPClientSpy *client = makeSUT[@"client"];
+    
     NSArray *requestURLs = @[url];
-
     [sut loadWithCompletion: ^(NSError *error, NSArray *landmarks) {}];
 
     XCTAssertTrue([client.requestURLs isEqual: requestURLs]);
-    
-    [self trackForMemoryLeaks:sut];
-    [self trackForMemoryLeaks:client];
 }
 
 - (void)test_loadTwice_requestDataFromURLTwice {
     NSURL *url = [[NSURL alloc] initWithString:@"https://some-url.com"];
-    HTTPClientSpy *client = HTTPClientSpy.new;
-    RemoteLandmarkLoader *sut = [[RemoteLandmarkLoader alloc] initWithHTTPClient:client andURL:url];
+    NSDictionary *makeSUT = [self makeSUTWithURL:url];
+    RemoteLandmarkLoader *sut = makeSUT[@"sut"];
+    HTTPClientSpy *client = makeSUT[@"client"];
     NSArray *requestURLs = @[url, url];
 
     [sut loadWithCompletion: ^(NSError *error, NSArray *landmarks) {}];
     [sut loadWithCompletion: ^(NSError *error, NSArray *landmarks) {}];
 
     XCTAssertTrue([client.requestURLs isEqual: requestURLs]);
-    
-    [self trackForMemoryLeaks:sut];
-    [self trackForMemoryLeaks:client];
 }
 
 - (void)test_load_deliversErrorOnClientError {
     NSURL *url = [[NSURL alloc] initWithString:@"https://some-url.com"];
-    HTTPClientSpy *client = HTTPClientSpy.new;
-    RemoteLandmarkLoader *sut = [[RemoteLandmarkLoader alloc] initWithHTTPClient:client andURL:url];
+    NSDictionary *makeSUT = [self makeSUTWithURL:url];
+    HTTPClientSpy *client = makeSUT[@"client"];
+    RemoteLandmarkLoader *sut = makeSUT[@"sut"];
         
     [self expect:sut toCompleteWithError:[self connectivityError] when:^{
         [client completeWithError:[self connectivityError]];
     }];
-    
-    [self trackForMemoryLeaks:sut];
-    [self trackForMemoryLeaks:client];
 }
 
 - (void)test_load_deliversErrorOnNon200HTTPClientResponse {
     NSURL *url = [[NSURL alloc] initWithString:@"https://some-url.com"];
-    HTTPClientSpy *client = HTTPClientSpy.new;
-    RemoteLandmarkLoader *sut = [[RemoteLandmarkLoader alloc] initWithHTTPClient:client andURL:url];
+    NSDictionary *makeSUT = [self makeSUTWithURL:url];
+    HTTPClientSpy *client = makeSUT[@"client"];
+    RemoteLandmarkLoader *sut = makeSUT[@"sut"];
 
     NSArray<NSNumber *> *samples = @[@199, @201, @300, @400, @500];
 
@@ -83,29 +74,25 @@
             [client completeWithStatusCode:(NSInteger)samples[i] withData: emptyListJSON at:i];
         }];
     }
-     
-    [self trackForMemoryLeaks:sut];
-    [self trackForMemoryLeaks:client];
 }
 
 - (void)test_load_deliversErrorOn200HTTPResponseWithInvalidJSON {
     NSURL *url = [[NSURL alloc] initWithString:@"https://some-url.com"];
-    HTTPClientSpy *client = HTTPClientSpy.new;
-    RemoteLandmarkLoader *sut = [[RemoteLandmarkLoader alloc] initWithHTTPClient:client andURL:url];
+    NSDictionary *makeSUT = [self makeSUTWithURL:url];
+    HTTPClientSpy *client = makeSUT[@"client"];
+    RemoteLandmarkLoader *sut = makeSUT[@"sut"];
     
     [self expect:sut toCompleteWithError:[self invalidError] when:^{
         NSData *invalidJSON = [NSData dataWithBytes:@"invalid json".UTF8String length:0];
         [client completeWithStatusCode:200 withData:invalidJSON at:0];
     }];
-    
-    [self trackForMemoryLeaks:sut];
-    [self trackForMemoryLeaks:client];
 }
 
 -(void)test_load_deliversNoItemsOn200HTTPResponseWithEmptyJSONList {
     NSURL *url = [[NSURL alloc] initWithString:@"https://some-url.com"];
-    HTTPClientSpy *client = HTTPClientSpy.new;
-    RemoteLandmarkLoader *sut = [[RemoteLandmarkLoader alloc] initWithHTTPClient:client andURL:url];
+    NSDictionary *makeSUT = [self makeSUTWithURL:url];
+    HTTPClientSpy *client = makeSUT[@"client"];
+    RemoteLandmarkLoader *sut = makeSUT[@"sut"];
 
     NSMutableArray *capturedLandmarks = NSMutableArray.new;
     NSMutableArray *capturedErrors = NSMutableArray.new;
@@ -121,15 +108,13 @@
     
     XCTAssertTrue([capturedErrors isEqual: @[]]);
     XCTAssertTrue([capturedLandmarks isEqual: @[]]);
-    
-    [self trackForMemoryLeaks:sut];
-    [self trackForMemoryLeaks:client];
 }
 
 - (void)test_load_deliversItemsOn200HTTPResponseWithJsonItems {
     NSURL *url = [[NSURL alloc] initWithString:@"https://some-url.com"];
-    HTTPClientSpy *client = HTTPClientSpy.new;
-    RemoteLandmarkLoader *sut = [[RemoteLandmarkLoader alloc] initWithHTTPClient:client andURL:url];
+    NSDictionary *makeSUT = [self makeSUTWithURL:url];
+    HTTPClientSpy *client = makeSUT[@"client"];
+    RemoteLandmarkLoader *sut = makeSUT[@"sut"];
     
     Landmark *item1 = [Landmark new];
     item1.id = [NSUUID new].UUIDString;
@@ -162,12 +147,30 @@
 
         [client completeWithStatusCode:200 withData:json at:0];
     }];
-    
-    [self trackForMemoryLeaks:sut];
-    [self trackForMemoryLeaks:client];
 }
 
 // MARK: - Helpers
+
+- (NSDictionary *)makeSUT {
+    NSURL *url = [[NSURL alloc] initWithString:@"https://a-url.com"];
+    HTTPClientSpy *client = HTTPClientSpy.new;
+    RemoteLandmarkLoader *sut = [[RemoteLandmarkLoader alloc] initWithHTTPClient:client andURL:url];
+    
+    [self trackForMemoryLeaks:sut];
+    [self trackForMemoryLeaks:client];
+    
+    return [[NSDictionary alloc] initWithObjects:@[sut, client] forKeys:@[@"sut", @"client"]];
+}
+
+- (NSDictionary *)makeSUTWithURL: (NSURL *)url {
+    HTTPClientSpy *client = HTTPClientSpy.new;
+    RemoteLandmarkLoader *sut = [[RemoteLandmarkLoader alloc] initWithHTTPClient:client andURL:url];
+    
+    [self trackForMemoryLeaks:sut];
+    [self trackForMemoryLeaks:client];
+    
+    return [[NSDictionary alloc] initWithObjects:@[sut, client] forKeys:@[@"sut", @"client"]];
+}
 
 - (void)trackForMemoryLeaks: (NSObject *)instance {
     __weak NSObject *weakInstance = instance;
