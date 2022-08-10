@@ -15,6 +15,8 @@
 		3457C4582752AEE500B2F722 /* RemoteLandmarkLoader.m in Sources */ = {isa = PBXBuildFile; fileRef = 3457C4562752AEE500B2F722 /* RemoteLandmarkLoader.m */; };
 		3457C45B2752AFBF00B2F722 /* HTTPClient.h in Headers */ = {isa = PBXBuildFile; fileRef = 3457C4592752AFBF00B2F722 /* HTTPClient.h */; };
 		3457C45F2752B00E00B2F722 /* HTTPClientSpy.m in Sources */ = {isa = PBXBuildFile; fileRef = 3457C45E2752B00E00B2F722 /* HTTPClientSpy.m */; };
+		F99CE11828A3DA350065BA7C /* LandmarkMapper.h in Headers */ = {isa = PBXBuildFile; fileRef = F99CE11628A3DA350065BA7C /* LandmarkMapper.h */; };
+		F99CE11928A3DA350065BA7C /* LandmarkMapper.m in Sources */ = {isa = PBXBuildFile; fileRef = F99CE11728A3DA350065BA7C /* LandmarkMapper.m */; };
 		F9A6C021289D3778007F9653 /* Landmark.m in Sources */ = {isa = PBXBuildFile; fileRef = F9A6C020289D3778007F9653 /* Landmark.m */; };
 /* End PBXBuildFile section */
 
@@ -40,6 +42,8 @@
 		3457C4592752AFBF00B2F722 /* HTTPClient.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = HTTPClient.h; sourceTree = "<group>"; };
 		3457C45D2752B00E00B2F722 /* HTTPClientSpy.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = HTTPClientSpy.h; sourceTree = "<group>"; };
 		3457C45E2752B00E00B2F722 /* HTTPClientSpy.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = HTTPClientSpy.m; sourceTree = "<group>"; };
+		F99CE11628A3DA350065BA7C /* LandmarkMapper.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = LandmarkMapper.h; sourceTree = "<group>"; };
+		F99CE11728A3DA350065BA7C /* LandmarkMapper.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = LandmarkMapper.m; sourceTree = "<group>"; };
 		F9A6C020289D3778007F9653 /* Landmark.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = Landmark.m; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -115,6 +119,8 @@
 				3457C4552752AEE500B2F722 /* RemoteLandmarkLoader.h */,
 				3457C4562752AEE500B2F722 /* RemoteLandmarkLoader.m */,
 				3457C4592752AFBF00B2F722 /* HTTPClient.h */,
+				F99CE11628A3DA350065BA7C /* LandmarkMapper.h */,
+				F99CE11728A3DA350065BA7C /* LandmarkMapper.m */,
 			);
 			path = "Landmark API";
 			sourceTree = "<group>";
@@ -136,6 +142,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				3457C4572752AEE500B2F722 /* RemoteLandmarkLoader.h in Headers */,
+				F99CE11828A3DA350065BA7C /* LandmarkMapper.h in Headers */,
 				3457C45B2752AFBF00B2F722 /* HTTPClient.h in Headers */,
 				3457C4502752540B00B2F722 /* Landmark.h in Headers */,
 			);
@@ -240,6 +247,7 @@
 			files = (
 				F9A6C021289D3778007F9653 /* Landmark.m in Sources */,
 				3457C4392752535E00B2F722 /* Landmark_objc.docc in Sources */,
+				F99CE11928A3DA350065BA7C /* LandmarkMapper.m in Sources */,
 				3457C4582752AEE500B2F722 /* RemoteLandmarkLoader.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
