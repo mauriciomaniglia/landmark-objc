@@ -21,6 +21,9 @@
     RemoteLandmarkLoader *sut = [[RemoteLandmarkLoader alloc] initWithHTTPClient:client andURL:url];
 
     XCTAssertTrue(client.requestURLs.count == 0);
+    
+    [self trackForMemoryLeaks:sut];
+    [self trackForMemoryLeaks:client];
 }
 
 - (void)test_load_requestDataFromURL {
@@ -32,6 +35,9 @@
     [sut loadWithCompletion: ^(NSError *error, NSArray *landmarks) {}];
 
     XCTAssertTrue([client.requestURLs isEqual: requestURLs]);
+    
+    [self trackForMemoryLeaks:sut];
+    [self trackForMemoryLeaks:client];
 }
 
 - (void)test_loadTwice_requestDataFromURLTwice {
@@ -44,6 +50,9 @@
     [sut loadWithCompletion: ^(NSError *error, NSArray *landmarks) {}];
 
     XCTAssertTrue([client.requestURLs isEqual: requestURLs]);
+    
+    [self trackForMemoryLeaks:sut];
+    [self trackForMemoryLeaks:client];
 }
 
 - (void)test_load_deliversErrorOnClientError {
@@ -54,6 +63,9 @@
     [self expect:sut toCompleteWithError:[self connectivityError] when:^{
         [client completeWithError:[self connectivityError]];
     }];
+    
+    [self trackForMemoryLeaks:sut];
+    [self trackForMemoryLeaks:client];
 }
 
 - (void)test_load_deliversErrorOnNon200HTTPClientResponse {
@@ -72,6 +84,8 @@
         }];
     }
      
+    [self trackForMemoryLeaks:sut];
+    [self trackForMemoryLeaks:client];
 }
 
 - (void)test_load_deliversErrorOn200HTTPResponseWithInvalidJSON {
@@ -83,6 +97,9 @@
         NSData *invalidJSON = [NSData dataWithBytes:@"invalid json".UTF8String length:0];
         [client completeWithStatusCode:200 withData:invalidJSON at:0];
     }];
+    
+    [self trackForMemoryLeaks:sut];
+    [self trackForMemoryLeaks:client];
 }
 
 -(void)test_load_deliversNoItemsOn200HTTPResponseWithEmptyJSONList {
@@ -104,6 +121,9 @@
     
     XCTAssertTrue([capturedErrors isEqual: @[]]);
     XCTAssertTrue([capturedLandmarks isEqual: @[]]);
+    
+    [self trackForMemoryLeaks:sut];
+    [self trackForMemoryLeaks:client];
 }
 
 - (void)test_load_deliversItemsOn200HTTPResponseWithJsonItems {
@@ -142,9 +162,20 @@
 
         [client completeWithStatusCode:200 withData:json at:0];
     }];
+    
+    [self trackForMemoryLeaks:sut];
+    [self trackForMemoryLeaks:client];
 }
 
 // MARK: - Helpers
+
+- (void)trackForMemoryLeaks: (NSObject *)instance {
+    __weak NSObject *weakInstance = instance;
+    
+    [self addTeardownBlock:^{
+        XCTAssertNil(weakInstance, "Instance should have been deallocated. Potential memory leak.");
+    }];
+}
 
 - (void)expect: (RemoteLandmarkLoader *)sut toCompleteWithError:(NSError *)error when: (void (^)(void))action {
     NSMutableArray *capturedErrors = NSMutableArray.new;

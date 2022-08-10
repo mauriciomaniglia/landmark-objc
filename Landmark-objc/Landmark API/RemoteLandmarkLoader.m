@@ -9,10 +9,14 @@
 #import "Landmark.h"
 #import "LandmarkMapper.h"
 
-@implementation RemoteLandmarkLoader
+@interface RemoteLandmarkLoader()
 
-id<HTTPClient> _client;
-NSURL * _url;
+@property (nonatomic, weak) id<HTTPClient> client;
+@property (nonatomic, weak) NSURL *url;
+
+@end
+
+@implementation RemoteLandmarkLoader
 
 - (instancetype)initWithHTTPClient:(id<HTTPClient>)client andURL:(NSURL *)url {
     if (self = [self init]) {
