@@ -29,7 +29,7 @@
     HTTPClientSpy *client = makeSUT[@"client"];
     
     NSArray *requestURLs = @[url];
-    [sut loadWithCompletion: ^(NSError *error, NSArray *landmarks) {}];
+    [sut loadWithCompletion:^(NSArray<Landmark *> *landmarks, NSError *error) {}];
 
     XCTAssertTrue([client.requestURLs isEqual: requestURLs]);
 }
@@ -41,8 +41,8 @@
     HTTPClientSpy *client = makeSUT[@"client"];
     NSArray *requestURLs = @[url, url];
 
-    [sut loadWithCompletion: ^(NSError *error, NSArray *landmarks) {}];
-    [sut loadWithCompletion: ^(NSError *error, NSArray *landmarks) {}];
+    [sut loadWithCompletion: ^(NSArray<Landmark *> *landmarks, NSError *error) {}];
+    [sut loadWithCompletion: ^(NSArray<Landmark *> *landmarks, NSError *error) {}];
 
     XCTAssertTrue([client.requestURLs isEqual: requestURLs]);
 }
@@ -88,7 +88,7 @@
     }];
 }
 
--(void)test_load_deliversNoItemsOn200HTTPResponseWithEmptyJSONList {
+- (void)test_load_deliversNoItemsOn200HTTPResponseWithEmptyJSONList {
     NSURL *url = [[NSURL alloc] initWithString:@"https://some-url.com"];
     NSDictionary *makeSUT = [self makeSUTWithURL:url];
     HTTPClientSpy *client = makeSUT[@"client"];
@@ -96,7 +96,7 @@
 
     NSMutableArray *capturedLandmarks = NSMutableArray.new;
     NSMutableArray *capturedErrors = NSMutableArray.new;
-    [sut loadWithCompletion: ^(NSError *error, NSArray *landmarks) {
+    [sut loadWithCompletion: ^(NSArray<Landmark *> *landmarks, NSError *error) {
         if ([landmarks count] > 0) { [capturedLandmarks addObject: landmarks]; }
         if (error) { [capturedErrors addObject:error]; }
     }];
@@ -182,7 +182,8 @@
 
 - (void)expect: (RemoteLandmarkLoader *)sut toCompleteWithError:(NSError *)error when: (void (^)(void))action {
     NSMutableArray *capturedErrors = NSMutableArray.new;
-    [sut loadWithCompletion: ^(NSError *error, NSArray *landmarks) {
+
+    [sut loadWithCompletion:^(NSArray<Landmark *> *landmarks, NSError *error) {
         [capturedErrors addObject: error];
     }];
     
@@ -193,7 +194,8 @@
 
 - (void)expect: (RemoteLandmarkLoader *)sut toCompleteWithLandmarks:(NSArray<Landmark *> *)landmarks when: (void (^)(void))action {
     __block NSArray<Landmark *> *capturedLandmarks;
-    [sut loadWithCompletion: ^(NSError *error, NSArray *landmarks) {
+    
+    [sut loadWithCompletion:^(NSArray<Landmark *> *landmarks, NSError *error) {
         capturedLandmarks = landmarks;
     }];
     

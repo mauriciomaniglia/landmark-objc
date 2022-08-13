@@ -27,18 +27,18 @@
     return self;
 }
 
-- (void)loadWithCompletion:(void (^)(NSError *, NSArray *))completion {
+- (void)loadWithCompletion:(void (^)(NSArray<Landmark *> *, NSError *))completion {
     [_client getFromURL:_url withCompletion: ^(NSData *data, NSHTTPURLResponse *response, NSError *error) {
 
         if (response) {
             [LandmarkMapper map:data andResponse:response completionHandler:^(NSArray *landmarks, NSError *error) {
-                completion(error, landmarks);
+                completion(landmarks, error);
             }];
         } else {
-            completion([self connectivityError], nil);
-        } 
+            completion(nil, [self connectivityError]);
+        }
 
-	}];
+    }];
 }
 
 - (NSError *)connectivityError {

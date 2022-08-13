@@ -7,11 +7,10 @@
 
 #import <Foundation/Foundation.h>
 #import "HTTPClient.h"
+#import "LandmarkLoader.h"
 
-@interface RemoteLandmarkLoader: NSObject
+@interface RemoteLandmarkLoader: NSObject <LandmarkLoader>
 
 - (instancetype)initWithHTTPClient:(id<HTTPClient>) client andURL:(NSURL *)url;
-
-- (void)loadWithCompletion:(void (^)(NSError *, NSArray *))completion;
 
 @end
