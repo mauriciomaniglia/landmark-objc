@@ -18,6 +18,7 @@
 		F99CE11828A3DA350065BA7C /* LandmarkMapper.h in Headers */ = {isa = PBXBuildFile; fileRef = F99CE11628A3DA350065BA7C /* LandmarkMapper.h */; };
 		F99CE11928A3DA350065BA7C /* LandmarkMapper.m in Sources */ = {isa = PBXBuildFile; fileRef = F99CE11728A3DA350065BA7C /* LandmarkMapper.m */; };
 		F9A6C021289D3778007F9653 /* Landmark.m in Sources */ = {isa = PBXBuildFile; fileRef = F9A6C020289D3778007F9653 /* Landmark.m */; };
+		F9B1813B28A82C8A007D5FBD /* URLSessionHTTPClientTests.m in Sources */ = {isa = PBXBuildFile; fileRef = F9B1813A28A82C8A007D5FBD /* URLSessionHTTPClientTests.m */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -45,6 +46,7 @@
 		F99CE11628A3DA350065BA7C /* LandmarkMapper.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = LandmarkMapper.h; sourceTree = "<group>"; };
 		F99CE11728A3DA350065BA7C /* LandmarkMapper.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = LandmarkMapper.m; sourceTree = "<group>"; };
 		F9A6C020289D3778007F9653 /* Landmark.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = Landmark.m; sourceTree = "<group>"; };
+		F9B1813A28A82C8A007D5FBD /* URLSessionHTTPClientTests.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = URLSessionHTTPClientTests.m; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -99,6 +101,7 @@
 			children = (
 				34D70638275554010031EDAB /* Helpers */,
 				3457C4532752AE4B00B2F722 /* RemoteLandmarkLoaderTests.m */,
+				F9B1813A28A82C8A007D5FBD /* URLSessionHTTPClientTests.m */,
 			);
 			path = "Landmark-objcTests";
 			sourceTree = "<group>";
@@ -256,6 +259,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				F9B1813B28A82C8A007D5FBD /* URLSessionHTTPClientTests.m in Sources */,
 				3457C4542752AE4B00B2F722 /* RemoteLandmarkLoaderTests.m in Sources */,
 				3457C45F2752B00E00B2F722 /* HTTPClientSpy.m in Sources */,
 			);
